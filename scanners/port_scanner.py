@@ -1,10 +1,8 @@
 import socket
 import threading
 
-open_ports = []
 
-
-def scan_port(target,port):
+def scan_port(target, port):
     try:
         sock = socket.socket()
         sock.settimeout(0.5)
@@ -12,18 +10,21 @@ def scan_port(target,port):
         try:
             banner = sock.recv(1024).decode().strip()
             print(f"Port {port} is open. Banner: {banner}")
-            open_ports.append((port, banner))
         except:
             print(f"Port {port} is open. No banner retrieved.")
-            open_ports.append((port, "No banner"))
+            sock.close()
+
     except:
         pass
 
 def main():
-    target = input("Enter IP address to scan : ")
-    for port in range(1, 1025):
-        thread = threading.Thread(target=scan_port, args=(target,port))
-        thread.start()
+    target = input("Enter target IP address or hostname : ")
+    try:
+        for port in range(1,1025):
+            thread = threading.Thread(target=scan_port, args=(target, port))
+            thread.start()
+    except KeyboardInterrupt:
+        print("\nExiting program.")
 
 
 if __name__ == "__main__":
